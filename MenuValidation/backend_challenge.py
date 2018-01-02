@@ -35,25 +35,23 @@ def getAllData(root, storeValues, link):
     return storedValues
 
 def isValidMenu (rootId, checkChildIds, entireMenuData):
-	nextId = ""
-
-	explored = []
-    # keep track of nodes to be checked
-    queue = [rootId]
-
-    while queue:
-        # pop shallowest node (first node) from queue
-        node = queue.pop(0)
-        if node not in explored:
-            # add node to list of checked nodes
-            explored.append(node)
-            child_ids = entireMenuData[node]['child_ids']
- 
-            # add neighbours of node to queue
-            for child_id in child_ids:
-                queue.append(child_id)
+		nextId = ""
+		queue = [rootId]
+		explored = []
+    	# keep track of nodes to be checked
+	   	while queue:
+	        # pop shallowest node (first node) from queue
+	    	node = queue.pop(0)
+	        if node not in explored:
+	            # add node to list of checked nodes
+	            explored.append(node)
+	            child_ids = entireMenuData[node]['child_ids']
+	 
+	            # add neighbours of node to queue
+	            for child_id in child_ids:
+	                queue.append(child_id)
     print (explored)
-    return explored
+	return explored
 
 #	if nextId != rootId:
 #		nextId = entireMenuData[checkChildIds]['child_ids']
