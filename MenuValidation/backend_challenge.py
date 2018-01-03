@@ -34,30 +34,53 @@ def getAllData(root, storeValues, link):
         
     return storedValues
 
-def isValidMenu (rootId, checkChildIds, entireMenuData):
-		nextId = ""
-		queue = [rootId]
-		explored = []
-    	# keep track of nodes to be checked
-	   	while queue:
-	        # pop shallowest node (first node) from queue
-	    	node = queue.pop(0)
-	        if node not in explored:
-	            # add node to list of checked nodes
-	            explored.append(node)
-	            child_ids = entireMenuData[node]['child_ids']
-	 
-	            # add neighbours of node to queue
-	            for child_id in child_ids:
-	                queue.append(child_id)
-    print (explored)
-	return explored
+def isValidMenu(rootId, checkChildIds, entireMenuData):
+    nextId = ""
+    queue = [rootId]
+    explored = {}
+    pathChildIdLen = 0;
 
-#	if nextId != rootId:
-#		nextId = entireMenuData[checkChildIds]['child_ids']
+    while queue:
+        
+        node = queue.pop(0)
+        
+        if node not in explored:
+            explored[node] = entireMenuData[int(node[len(node)-1])-1]['child_ids']
+            
+            #if pathChildIdLen == 0:
+            child_ids = entireMenuData[int(node[len(node)-1])-1]['child_ids'] #Get last 
+            #else:
+                
+               #child_ids = entireMenuData[int(node[0])-1]['child_ids']
 
-#	return 0
+            pathChildIdLen = len(child_ids)   #Need this to check and iterate all the path options in child_ids as it re-loops
+            
+            if len(child_ids) > 0:
+                lastParent = explored[len(explored)-1] #Add last index from explored if there is multiple paths
+                explored.pop(len(explored)-1)#Pop last index
+                for child_id in child_ids:
+                    morePaths = []
+                    morePaths.append(lastParent) 
+                    morePaths.append(child_id)
+                    queue.append(morePaths)
 
+            #else:
+                #queue.append(child_id)        
+
+    #print (explored)    
+    return explored                
+
+def isAValidMenu(rootId, checkChildIds, entireMenuData):
+    save = []
+    #dfs_paths
+    stack = [(int(rootId), [int(rootId)])]
+    while stack:
+        (vertex, path) = stack.pop()
+        for next in entireMenuData[vertex]['child_ids']:
+            print stack
+            stack.append((next,path + [next]))
+    return 0
+    
 
 if __name__ == "__main__":
      
@@ -69,7 +92,7 @@ if __name__ == "__main__":
     #Get all Data for Menu's 
     entireMenu = getAllData("menus", storeMenus, linkpages)
     
-    print (entireMenu)
+    #print (entireMenu)
    	
 
     root_id = ""
@@ -79,11 +102,11 @@ if __name__ == "__main__":
     	#print (entireMenu[i])
     	if entireMenu[i].get("parent_id") is None:
     		root_id = entireMenu[i]["id"]
-        	print (root_id)
+        	#print (root_id)
 
         	for j in range(len(entireMenu[i]["child_ids"])):
-            		saveChildId = entireMenu[i]["child_ids"][j]
-                	isValidMenu("2", saveChildId, entireMenu)
+                    saveChildId = entireMenu[i]["child_ids"][j]
+                    print (isAValidMenu("2", saveChildId, entireMenu))
 
 
                 #print (saveChildId)
