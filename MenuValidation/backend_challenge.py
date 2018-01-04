@@ -9,6 +9,8 @@ import sys
 import requests
 import json
 import pprint
+import copy
+import collections
 
 def getAllPages(link):
     
@@ -34,72 +36,42 @@ def getAllData(root, storeValues, link):
         
     return storedValues
 
-def isValidMenu(rootId, checkChildIds, entireMenuData):
-    nextId = ""
-    queue = [rootId]
-    explored = []
-    pathChildIdLen = 0;
 
-    while queue:
-        
-        node = queue.pop(0)
-        
-        if node not in explored:
-            explored.append(node)
-            
-            #if pathChildIdLen == 0:
-            child_ids = entireMenuData[int(node)-1]['child_ids'] #Get last 
-            #else:
-                
-               #child_ids = entireMenuData[int(node[0])-1]['child_ids']
+def exploringGraph(start, graph,end, path = []):
+    print (path)
+    path = path + [start]
+   # dup = set(path)
+    if start == end:
+        return [path]
+    #elif findDuplicate(path) and len(path)>1:
+    #    return [path]  #Duplicate detected  
+    #if not rootId in graph:
+    #    return None
+    paths = []
+    for node in graph[start]:
+        if node not in path:
+            newpaths = exploringGraph(node,graph,end,path) 
 
-            #pathChildIdLen = len(child_ids)   #Need this to check and iterate all the path options in child_ids as it re-loops
-            
-            #if len(child_ids) > 0:
-                #lastParent = explored[len(explored)-1] #Add last index from explored if there is multiple paths
-                #explored.pop(len(explored)-1)#Pop last index
-            for child_id in child_ids:
-                    #morePaths = []
-                    #morePaths.append(lastParent) 
-                    #morePaths.append(child_id)
-                queue.append(child_id)
+            for newpath in newpaths:
+                paths.append(newpath)
 
-            #else:
-                #queue.append(child_id)        
 
-    print (explored)    
-    return explored                
+    return paths
 
-def isAValidMenu(rootId, end, entireMenuData):
-    
-    queue = []
-    queue.append([rootId])
-    #stack = [(int(rootId), [int(rootId)])]
-    while queue:
-        path = queue.pop(0)
-        node = path
-        if node == end:
-            return path
-        for adjacent in entireMenuData[int(node)-1]['child_ids']:
-            new_path = list(path)
-            new_path.append(adjacent)
-            queue.append(new_path)
-            
-        #(vertex, path) = stack.pop(0)
-        #for next in entireMenuData[vertex-1]['child_ids']:
-        #    if next == "":
-        #        yield path + [next_node]
-        #    else:
-        #        stack.append((next,path + [next]))
-   
-    
+def findDuplicate (checkinglist):
+    unique = set(checkinglist)
+    for each_val in unique:
+        count = checkinglist.count(each_val)
+        if count > 1:
+            return True 
+    return False                           
 
 if __name__ == "__main__":
      
     #Get total amount of pages in API link
     linkpages = "https://backend-challenge-summer-2018.herokuapp.com/challenges.json?id=1&page=1"
-
     storeMenus = []
+    storeMenusNodes = {}
     
     #Get all Data for Menu's 
     entireMenu = getAllData("menus", storeMenus, linkpages)
@@ -109,17 +81,40 @@ if __name__ == "__main__":
 
     root_id = ""
     set_validity = [] #sort menu whether if they are valid or not
-        
+    store_rootId = []
+
+    #Create a hashmap of the graphing api
     for i in range(len(entireMenu)):
-    	#print (entireMenu[i])
+    	
     	if entireMenu[i].get("parent_id") is None:
     		root_id = entireMenu[i]["id"]
-        	#print (root_id)
+        	store_rootId.append(str(root_id))
+          
 
         	for j in range(len(entireMenu[i]["child_ids"])):
                     saveChildId = entireMenu[i]["child_ids"][j]
+                    if str(root_id) in storeMenusNodes: 
+                        storeMenusNodes[str(root_id)].append(str(saveChildId))  
+                    else: 
+                        storeMenusNodes[str(root_id)] = [str(saveChildId)]    
+        else:
+            current_id = entireMenu[i]["id"]
+            if len(entireMenu[i]["child_ids"]) is 0:
+                storeMenusNodes[str(current_id)] = ["end"]
+            else:    
+                for j in range(len(entireMenu[i]["child_ids"])):
+                        saveChildId = entireMenu[i]["child_ids"][j]
+                        #print (saveChildId)
+                        if str(current_id) in storeMenusNodes: 
+                            storeMenusNodes[str(current_id)].append(str(saveChildId))
+                        else: 
+                            storeMenusNodes[str(current_id)] = [str(saveChildId)]
+
+    #print (storeMenusNodes)
+    #for root in store_rootId:
+    print (exploringGraph("1",storeMenusNodes,"end"))
                     #isValidMenu("2", saveChildId, entireMenu)
-                    print isAValidMenu(root_id, "" ,entireMenu)
+                    #print isAValidMenu(root_id, "" ,entireMenu)
                     #for val in isAValidMenu( root_id , "" , entireMenu ):
                         #print (val)
                     #[ print (x) for x in isAValidMenu( root_id , "" , entireMenu ) ]
