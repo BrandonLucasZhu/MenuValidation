@@ -38,30 +38,35 @@ def getAllData(root, storeValues, link):
 
 
 def exploringGraph(start, graph,end, path = []):
-    print (path)
+    
     path = path + [start]
+   # print (path)
    # dup = set(path)
     if start == end:
         return [path]
-    #elif findDuplicate(path) and len(path)>1:
-    #    return [path]  #Duplicate detected  
+    
     #if not rootId in graph:
     #    return None
     paths = []
     for node in graph[start]:
         if node not in path:
-            newpaths = exploringGraph(node,graph,end,path) 
-
+            newpaths = exploringGraph(node,graph,end,path)
+            print (newpaths)
             for newpath in newpaths:
                 paths.append(newpath)
+        #elif findDuplicate(path, node):
+        #    newpaths = exploringGraph(node,graph,end,path)
+        #    for newpath in newpaths:
+         #       paths.append(newpath)
+        #    return paths     
 
 
     return paths
 
-def findDuplicate (checkinglist):
+def findDuplicate (checkinglist, loopedtwice):
     unique = set(checkinglist)
-    for each_val in unique:
-        count = checkinglist.count(each_val)
+    for i in range(len(unique)):
+        count = checkinglist[i].count(loopedtwice) #Check if menu repeats back to root id
         if count > 1:
             return True 
     return False                           
