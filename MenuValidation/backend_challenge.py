@@ -49,6 +49,7 @@ def exploringGraph(start, graph,end, root, path = []):
     #    return None
     #print (path)
     for checkChildId in graph[start]:
+        #Break search if next node is an end
         if checkChildId == "end":
             break
 
@@ -64,25 +65,20 @@ def exploringGraph(start, graph,end, root, path = []):
     for node in graph[start]:
         if node not in path:
             newpaths = exploringGraph(node,graph,end,root,path)
-            #print (newpaths)
+           
             for newpath in newpaths:
                 paths.append(newpath)
-        #elif findDuplicate(path, node):
-        #    newpaths = exploringGraph(node,graph,end,path)
-        #    for newpath in newpaths:
-         #       paths.append(newpath)
-        #    return paths     
+   
 
 
     return paths
 
 def findDuplicate (checkinglist, loopedtwice):
     unique = set(checkinglist)
-    for i in range(len(unique)):
-        count = checkinglist[i].count(loopedtwice) #Check if menu repeats back to root id
-        if count > 1:
-            return True 
-    return False                           
+    if len(unique) != len(checkinglist):
+        return True
+    else:
+        return False                             
 
 if __name__ == "__main__":
      
@@ -129,8 +125,37 @@ if __name__ == "__main__":
                             storeMenusNodes[str(current_id)] = [str(saveChildId)]
 
     #print (storeMenusNodes)
+    json_file = {}
+    valid_menus = []
+    invalid_menus = []
+    json_file["valid_menus"] = valid_menus
+    json_file["invalid_menus"] = invalid_menus
     for root in store_rootId:
-        print (exploringGraph(root,storeMenusNodes,"end",root))
+        menu_node = exploringGraph(root,storeMenusNodes,"end",root)
+        
+        for nodeValues in menu_node:
+            print (nodeValues)
+            if findDuplicate(nodeValues,root):
+                storeInvalid = {}
+                storeInvalid["root_id"] = root
+                storeInvalid["children"] = nodeValues
+                json_file["invalid_menus"].append(storeInvalid)
+            
+            else:
+                storeValid = {}
+                storeValid["root_id"] = root
+                storeValid["children"] = nodeValues
+                json_file["valid_menus"].append(storeValid) 
+    
+    
+    with open('data.json', 'w') as dataMenu:
+        data = json.dumps(json_file,dataMenu,indent = 3)
+        desiredResult = json.dump(data, dataMenu)
+
+    print (data)
+
+
+
                     #isValidMenu("2", saveChildId, entireMenu)
                     #print isAValidMenu(root_id, "" ,entireMenu)
                     #for val in isAValidMenu( root_id , "" , entireMenu ):
