@@ -138,18 +138,21 @@ if __name__ == "__main__":
             if findDuplicate(nodeValues,root):
                 storeInvalid = {}
                 storeInvalid["root_id"] = root
+                nodeValues.pop(0)
                 storeInvalid["children"] = nodeValues
                 json_file["invalid_menus"].append(storeInvalid)
             
             else:
                 storeValid = {}
                 storeValid["root_id"] = root
+                nodeValues.pop(0)
+                nodeValues.pop(len(nodeValues)-1)
                 storeValid["children"] = nodeValues
                 json_file["valid_menus"].append(storeValid) 
     
     
     with open('data.json', 'w') as dataMenu:
-        data = json.dumps(json_file,dataMenu,indent = 3)
+        data = json.dumps(json_file,dataMenu,indent = 4)
         desiredResult = json.dump(data, dataMenu)
 
     print (data)
