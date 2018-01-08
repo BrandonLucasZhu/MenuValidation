@@ -37,7 +37,7 @@ def getAllData(root, storeValues, link):
     return storedValues
 
 
-def exploringGraph(start, graph,end, path = []):
+def exploringGraph(start, graph,end, root, path = []):
     
     path = path + [start]
    # print (path)
@@ -47,11 +47,24 @@ def exploringGraph(start, graph,end, path = []):
     
     #if not rootId in graph:
     #    return None
+    #print (path)
+    for checkChildId in graph[start]:
+        if checkChildId == "end":
+            break
+
+        for check in graph[checkChildId]:
+            if check  == root:
+        #Check if the node goes back to root
+            #print (path)
+                path.append(checkChildId)
+                path.append(root)
+                return [path]
+
     paths = []
     for node in graph[start]:
         if node not in path:
-            newpaths = exploringGraph(node,graph,end,path)
-            print (newpaths)
+            newpaths = exploringGraph(node,graph,end,root,path)
+            #print (newpaths)
             for newpath in newpaths:
                 paths.append(newpath)
         #elif findDuplicate(path, node):
@@ -116,8 +129,8 @@ if __name__ == "__main__":
                             storeMenusNodes[str(current_id)] = [str(saveChildId)]
 
     #print (storeMenusNodes)
-    #for root in store_rootId:
-    print (exploringGraph("1",storeMenusNodes,"end"))
+    for root in store_rootId:
+        print (exploringGraph(root,storeMenusNodes,"end",root))
                     #isValidMenu("2", saveChildId, entireMenu)
                     #print isAValidMenu(root_id, "" ,entireMenu)
                     #for val in isAValidMenu( root_id , "" , entireMenu ):
