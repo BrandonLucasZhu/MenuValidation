@@ -36,18 +36,15 @@ def getAllData(root, storeValues, link):
         
     return storedValues
 
-
+#Function for searching all paths
 def exploringGraph(start, graph,end, root, path = []):
     
     path = path + [start]
-   # print (path)
-   # dup = set(path)
+
     if start == end:
         return [path]
     
-    #if not rootId in graph:
-    #    return None
-    #print (path)
+    
     for checkChildId in graph[start]:
         #Break search if next node is an end
         if checkChildId == "end":
@@ -56,7 +53,7 @@ def exploringGraph(start, graph,end, root, path = []):
         for check in graph[checkChildId]:
             if check  == root:
         #Check if the node goes back to root
-            #print (path)
+            
                 path.append(checkChildId)
                 path.append(root)
                 return [path]
@@ -90,8 +87,7 @@ if __name__ == "__main__":
     #Get all Data for Menu's 
     entireMenu = getAllData("menus", storeMenus, linkpages)
     
-    #print (entireMenu)
-   	
+   
 
     root_id = ""
     set_validity = [] #sort menu whether if they are valid or not
@@ -99,17 +95,17 @@ if __name__ == "__main__":
 
     #Create a hashmap of the graphing api
     for i in range(len(entireMenu)):
-    	
-    	if entireMenu[i].get("parent_id") is None:
-    		root_id = entireMenu[i]["id"]
-        	store_rootId.append(str(root_id))
+    
+        if entireMenu[i].get("parent_id") is None:
+            root_id = entireMenu[i]["id"]
+            store_rootId.append(str(root_id))
           
 
-        	for j in range(len(entireMenu[i]["child_ids"])):
-                    saveChildId = entireMenu[i]["child_ids"][j]
-                    if str(root_id) in storeMenusNodes: 
-                        storeMenusNodes[str(root_id)].append(str(saveChildId))  
-                    else: 
+            for j in range(len(entireMenu[i]["child_ids"])):
+                saveChildId = entireMenu[i]["child_ids"][j]
+                if str(root_id) in storeMenusNodes: 
+                    storeMenusNodes[str(root_id)].append(str(saveChildId))  
+                else: 
                         storeMenusNodes[str(root_id)] = [str(saveChildId)]    
         else:
             current_id = entireMenu[i]["id"]
@@ -118,13 +114,13 @@ if __name__ == "__main__":
             else:    
                 for j in range(len(entireMenu[i]["child_ids"])):
                         saveChildId = entireMenu[i]["child_ids"][j]
-                        #print (saveChildId)
+                       
                         if str(current_id) in storeMenusNodes: 
                             storeMenusNodes[str(current_id)].append(str(saveChildId))
                         else: 
                             storeMenusNodes[str(current_id)] = [str(saveChildId)]
 
-    #print (storeMenusNodes)
+    #Set up and store onto json file
     json_file = {}
     valid_menus = []
     invalid_menus = []
@@ -134,7 +130,7 @@ if __name__ == "__main__":
         menu_node = exploringGraph(root,storeMenusNodes,"end",root)
         
         for nodeValues in menu_node:
-            print (nodeValues)
+            
             if findDuplicate(nodeValues,root):
                 storeInvalid = {}
                 storeInvalid["root_id"] = root
@@ -152,27 +148,14 @@ if __name__ == "__main__":
     
     
     with open('data.json', 'w') as dataMenu:
-        data = json.dumps(json_file,dataMenu,indent = 4)
+        data = json.dumps(json_file,indent = 4)
         desiredResult = json.dump(data, dataMenu)
 
     print (data)
 
 
 
-                    #isValidMenu("2", saveChildId, entireMenu)
-                    #print isAValidMenu(root_id, "" ,entireMenu)
-                    #for val in isAValidMenu( root_id , "" , entireMenu ):
-                        #print (val)
-                    #[ print (x) for x in isAValidMenu( root_id , "" , entireMenu ) ]
-
-                #print (saveChildId)
-            #else:
-                #store root_id and begin search through child node menus
-                #root_id = entireMenu[i]["id"]
-                #saveChildId = entireMenu[i]["child_ids"][j] 
-                #print (root_id)    
-            #for j in range(len(saveChildId)):    
-            #    print (entireMenu[saveChildId[j]])
+                
     
         
     
